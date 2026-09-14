@@ -37,4 +37,22 @@ public class OrderBookTest {
         assertEquals(barata.id(), book.peekSell().id());
     }
 
+    @Test
+    void deveRealizarMatchQuandoPrecoCompraMaiorOuIgualVenda() {
+        OrderBook book = new OrderBook();
+        var accountId = new AccountId(java.util.UUID.randomUUID());
+        var ticker = new Ticker("PETR4");
+
+        var compra = new Order(java.util.UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(15.0)), OrderType.BUY, new Quantity(100));
+        var venda  = new Order(java.util.UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(12.0)), OrderType.SELL, new Quantity(100));
+
+        book.add(compra);
+        book.add(venda);
+
+        book.match();
+
+        org.junit.jupiter.api.Assertions.assertTrue(book.isBuyQueueEmpty());
+        org.junit.jupiter.api.Assertions.assertTrue(book.isSellQueueEmpty());
+   }
+
 }

@@ -8,7 +8,7 @@ public class OrderBook {
     private final PriorityQueue<Order> buyQueue = new PriorityQueue<>(
             Comparator.comparing(o -> o.money().amount(), Comparator.reverseOrder())
     );
-    private final PriorityQueue<Order> sellQueue = new PriorityQueue<>(
+    final PriorityQueue<Order> sellQueue = new PriorityQueue<>(
             Comparator.comparing(o -> o.money().amount())
     );
 
@@ -30,5 +30,21 @@ public class OrderBook {
 
     public Order peekSell() {
         return sellQueue.peek();
+    }
+
+    public void match() {
+        if (!buyQueue.isEmpty() && !sellQueue.isEmpty()) {
+            Order bestBuy = buyQueue.peek();
+            Order bestSell = sellQueue.peek();
+
+            if (bestBuy.money().amount().compareTo(bestSell.money().amount()) >= 0) {
+                buyQueue.poll();
+                sellQueue.poll();
+            }
+        }
+    }
+
+    public boolean isSellQueueEmpty() {
+        return sellQueue.isEmpty();
     }
 }
