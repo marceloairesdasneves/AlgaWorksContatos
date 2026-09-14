@@ -8,14 +8,12 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OrderBookTest {
-   @Test
+    @Test
     public void devePriorizarMaiorPrecoNaCompra() {
         OrderBook book = new OrderBook();
-        var accountId = new AccountId(UUID.randomUUID());
-        var ticker = new Ticker("PETR4");
+        var baixa = createOrder(BigDecimal.valueOf(10.0), OrderType.BUY, 100);
+        var alta  = createOrder(BigDecimal.valueOf(12.5), OrderType.BUY, 100);
 
-        var baixa = new Order(UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(10.0)), OrderType.BUY, new Quantity(100));
-        var alta  = new Order(UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(12.5)), OrderType.BUY, new Quantity(100));
         book.add(baixa);
         book.add(alta);
 
@@ -25,26 +23,30 @@ public class OrderBookTest {
     @Test
     void devePriorizarMenorPrecoNaVenda() {
         OrderBook book = new OrderBook();
-        var accountId = new AccountId(java.util.UUID.randomUUID());
-        var ticker = new Ticker("PETR4");
-
-        var cara   = new Order(java.util.UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(15.0)), OrderType.SELL, new Quantity(100));
-        var barata = new Order(java.util.UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(12.0)), OrderType.SELL, new Quantity(100));
+        var cara   = createOrder(BigDecimal.valueOf(15.0), OrderType.SELL, 100);
+        var barata = createOrder(BigDecimal.valueOf(12.0), OrderType.SELL, 100);
 
         book.add(cara);
         book.add(barata);
 
         assertEquals(barata.id(), book.peekSell().id());
     }
+    private Order createOrder(BigDecimal price, OrderType type, int quantity) {
+        return new Order(
+                java.util.UUID.randomUUID(),
+                new AccountId(java.util.UUID.randomUUID()),
+                new Ticker("PETR4"),
+                new Money(BigDecimal.valueOf(price.doubleValue())),
+                type,
+                new Quantity(quantity)
+        );
+    }
 
     @Test
     void deveRealizarMatchQuandoPrecoCompraMaiorOuIgualVenda() {
         OrderBook book = new OrderBook();
-        var accountId = new AccountId(java.util.UUID.randomUUID());
-        var ticker = new Ticker("PETR4");
-
-        var compra = new Order(java.util.UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(15.0)), OrderType.BUY, new Quantity(100));
-        var venda  = new Order(java.util.UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(12.0)), OrderType.SELL, new Quantity(100));
+        var compra = createOrder(BigDecimal.valueOf(15.0), OrderType.BUY, 100);
+        var venda  = createOrder(BigDecimal.valueOf(12.0), OrderType.SELL, 100);
 
         book.add(compra);
         book.add(venda);
@@ -53,6 +55,5 @@ public class OrderBookTest {
 
         org.junit.jupiter.api.Assertions.assertTrue(book.isBuyQueueEmpty());
         org.junit.jupiter.api.Assertions.assertTrue(book.isSellQueueEmpty());
-   }
-
+    }
 }
