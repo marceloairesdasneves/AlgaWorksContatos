@@ -21,4 +21,20 @@ public class OrderBookTest {
 
         assertEquals(alta.id(), book.peekBuy().id());
     }
+
+    @Test
+    void devePriorizarMenorPrecoNaVenda() {
+        OrderBook book = new OrderBook();
+        var accountId = new AccountId(java.util.UUID.randomUUID());
+        var ticker = new Ticker("PETR4");
+
+        var cara   = new Order(java.util.UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(15.0)), OrderType.SELL, new Quantity(100));
+        var barata = new Order(java.util.UUID.randomUUID(), accountId, ticker, new Money(BigDecimal.valueOf(12.0)), OrderType.SELL, new Quantity(100));
+
+        book.add(cara);
+        book.add(barata);
+
+        assertEquals(barata.id(), book.peekSell().id());
+    }
+
 }
