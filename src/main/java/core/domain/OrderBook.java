@@ -1,6 +1,7 @@
-package core.domain;
+package core.domain.vo;
 
 import core.domain.enums.OrderType;
+
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
